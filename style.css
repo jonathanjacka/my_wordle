@@ -25,29 +25,23 @@ body {
 }
 
 .rows-container {
-  display: flex;
   width: 100%;
-  align-items: center;
-  justify-content: space-evenly;
   margin: 30px 0;
 }
 
+.row {
+  display: block;
+}
+
 .cell {
+  display: inline-block;
   border-radius: 5px;
-  font-size: 75px;
-  height: 100px;
-  width: 80px;
+  font-size: 20px;
+  height: 50px;
+  width: 40px;
   border: 1px solid #eee;
   text-align: center;
   font-weight: 300;
-  -moz-appearance: textfield; /*Remove number input arrows for firefox */
-}
-
-/*Remove number input arrows for Chrome and Safari */
-.code::-webkit-outer-spin-button,
-.code::-webkit-inner-spin-button {
-  -webkit-appearance: none;
-  margin: 0;
 }
 
 .code:valid {
