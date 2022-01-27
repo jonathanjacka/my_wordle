@@ -1,12 +1,10 @@
 const state = {
-    word: 'audio',
+    word: 'hello',
     attempts: 0,
     isSolved: false,
     currentRow: document.getElementById('row-1'),
-    currentWord: []
+    currentWord: ''
 }
-
-console.log(state);
 
 const getState = () => state;
 
@@ -27,13 +25,10 @@ const setCurrentWord = (currentWord) => state.currentWord = currentWord;
 
 const setCellListeners = (currentRow) => {
     const cells = currentRow.querySelectorAll('.cell');
-
     cells[0].focus();
-
     cells.forEach((cell, idx) => {
         cell.addEventListener('keydown', ({key}) => handleKeyDown(key, cells, cell, idx));
     }); 
-
     document.addEventListener('keydown', handleDocListener);
 }
 
@@ -43,31 +38,14 @@ const removeCellListeners = (currentRow) => {
     document.removeEventListener('keydown', handleDocListener);
 }
 
-const handleEnter = () => {
-    if(checkRowComplete(state.currentRow)) {
+const disableRow = (currentRow) => {
+    const cells = currentRow.querySelectorAll('.cell');
+    cells.forEach(cell => {cell.disabled = true; cell.blur()});
+}
 
-        //check to see if word is valid
-
-        setWord(updateCurrentWord(state.currentRow))
-
-        addAttempt();
-
-        removeCellListeners(getCurrentRow());
-
-        //disable current row
-
-        //color letters accordingly 
-
-        //check to see if winner
-
-        if(getAttempts() < 6  && !getIsSolved()) {
-            setCurrentRow(`row-${getAttempts() + 1}`);
-            setCellListeners(getCurrentRow());
-        } else {
-            console.log('Game is finished!');
-            //complete end game 
-        }
-    }
+const enableRow = (currentRow) => {
+    const cells = currentRow.querySelectorAll('.cell');
+    cells.forEach(cell => cell.disabled = false);
 }
 
 const checkRowComplete = (currentRow) => {
@@ -77,20 +55,19 @@ const checkRowComplete = (currentRow) => {
 }
 
 const updateCurrentWord = (currentRow) => {
-    const word = []; 
-    currentRow.querySelectorAll('.cell').forEach(cell => word.push(cell.value));
+    let word = ''; 
+    currentRow.querySelectorAll('.cell').forEach(cell => word = word + cell.value);
+    console.log('Current word: ', word);
     return word;
 }
 
 const handleKeyDown = (key, cells, cell, idx) => {
-
     if(key >= 'a' && key <= 'z') {
         cell.value = '';
         if(idx < cells.length - 1) {
             setTimeout(() => cells[idx + 1].focus(), 10);
         }
     }else if (key === 'Backspace'){
-
         if(idx > 0) {
             setTimeout(() => {
                 cells[idx - 1].focus(); 
@@ -117,10 +94,68 @@ const handleDocListener = ({key}) => {
     }
 }
 
+const checkLetters = async (word, currentWord, currentRow) => {
+    const pause = (milliseconds) => new Promise(resolve => setTimeout(resolve, milliseconds));
+    const cells = currentRow.querySelectorAll('.cell');
+
+    for(let i = 0; i < currentWord.length; i++){
+            if(currentWord[i] === word[i]){
+                cells[i].style.backgroundColor = '#90ee90';
+                cells[i].style.color = 'white';
+            } else if(word.indexOf(currentWord[i]) >= 0) {
+                cells[i].style.backgroundColor = '#eeee90';
+            } else {
+                cells[i].style.backgroundColor = '#bebebe';
+                cells[i].style.color = 'white';
+            }
+            // currentWord = currentWord.replace(currentWord[i], '');
+            await pause(500);
+    }
+}
+
+const handleEnter = async () => {
+
+    const pause = (milliseconds) => {
+        return new Promise(resolve => setTimeout(resolve, milliseconds))
+    }
+
+    if(checkRowComplete(state.currentRow)) {
+        //check to see if word is valid
+
+        setWord(updateCurrentWord(state.currentRow))
+        console.log(getCurrentWord());
+        
+        addAttempt();
+
+        removeCellListeners(getCurrentRow());
+
+        //disable current row
+        disableRow(getCurrentRow());
+
+        //color letters accordingly
+        checkLetters(getWord(), getCurrentWord(), getCurrentRow());
+        await pause(2800);
+
+        //check to see if winner
+
+        if(getAttempts() < 6  && !getIsSolved()) {
+            setCurrentRow(`row-${getAttempts() + 1}`);
+            enableRow(getCurrentRow());
+            setCellListeners(getCurrentRow());
+            
+        } else {
+            console.log('Game is finished!');
+            //complete end game 
+        }
+    }
+}
+
 
 /* **************************** */
 
+enableRow(getCurrentRow());
 setCellListeners(getCurrentRow());
+
 
 
 

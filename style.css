@@ -34,6 +34,7 @@ body {
 }
 
 .cell {
+  caret-color: transparent;
   display: inline-block;
   border-radius: 5px;
   font-size: 20px;
@@ -42,6 +43,7 @@ body {
   border: 1px solid #eee;
   text-align: center;
   font-weight: 300;
+  transition: all 0.3s;
 }
 
 .code:valid {
