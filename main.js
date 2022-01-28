@@ -98,18 +98,46 @@ const checkLetters = async (word, currentWord, currentRow) => {
     const pause = (milliseconds) => new Promise(resolve => setTimeout(resolve, milliseconds));
     const cells = currentRow.querySelectorAll('.cell');
 
-    for(let i = 0; i < currentWord.length; i++){
-            if(currentWord[i] === word[i]){
-                cells[i].style.backgroundColor = '#90ee90';
-                cells[i].style.color = 'white';
-            } else if(word.indexOf(currentWord[i]) >= 0) {
-                cells[i].style.backgroundColor = '#eeee90';
-            } else {
-                cells[i].style.backgroundColor = '#bebebe';
-                cells[i].style.color = 'white';
-            }
-            // currentWord = currentWord.replace(currentWord[i], '');
-            await pause(500);
+    const colors = {
+        0: 'grey',
+        1: 'grey',
+        2: 'grey',
+        3: 'grey',
+        4: 'grey'
+    };
+    
+    for (let i = 0; i < currentWord.length; i++) {
+        if(word[i] === currentWord[i]){
+            colors[i] = 'green';
+            console.log(word[i], currentWord[i]);
+            currentWord = currentWord.substring(0, i) + 'G' + currentWord.substring(i + 1);
+            word = word.substring(0, i) + 'G' + word.substring(i + 1);
+        }
+    }
+
+    for (let j = 0; j < currentWord.length; j++) {
+        const wordIdx = word.indexOf(currentWord[j]);
+        console.log(wordIdx);
+        if(wordIdx >= 0 && (currentWord[j] !== 'G')){
+            colors[j] = 'yellow';
+            currentWord = currentWord.substring(0, j) + 'G' + currentWord.substring(j + 1);
+            word = word.substring(0, wordIdx) + 'G' + word.substring(wordIdx + 1);
+        }
+    }
+
+    let i = 0;
+    for (let idx in colors) {
+        if(colors[idx] === 'green'){
+            cells[i].style.backgroundColor = '#1AA33C';
+            cells[i].style.color = '#fff';
+        } else if (colors[idx] === 'yellow') {
+            cells[i].style.backgroundColor = '#F6E695';
+        } else {
+            cells[i].style.backgroundColor = '#D7D7D7';
+            cells[i].style.color = '#fff'; 
+        }
+        i++;
+        await pause(500);
     }
 }
 
@@ -137,6 +165,7 @@ const handleEnter = async () => {
         await pause(2800);
 
         //check to see if winner
+        setIsSolved(getWord() === getCurrentWord());
 
         if(getAttempts() < 6  && !getIsSolved()) {
             setCurrentRow(`row-${getAttempts() + 1}`);
@@ -144,8 +173,10 @@ const handleEnter = async () => {
             setCellListeners(getCurrentRow());
             
         } else {
+            const endMessage = getIsSolved() ? `You win in ${getAttempts()} attempts!` : 'You did not complete the Wordle!';
+            console.log(endMessage);
             console.log('Game is finished!');
-            //complete end game 
+            
         }
     }
 }
