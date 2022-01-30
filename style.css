@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Mulish:wght@300;400;700&display=swap");
+@import url('https://fonts.googleapis.com/css2?family=Mulish:wght@300;400;700&display=swap');
 
 * {
   box-sizing: border-box;
@@ -6,7 +6,7 @@
 
 body {
   background-color: #fbfcfe;
-  font-family: "Mulish", sans-serif;
+  font-family: 'Mulish', sans-serif;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -32,6 +32,9 @@ body {
 
 .row {
   display: block;
+  margin-bottom: 10px;
+  display: flex;
+  justify-content: center;
 }
 
 .cell {
@@ -41,34 +44,46 @@ body {
   font-size: 20px;
   height: 50px;
   width: 40px;
-  border: 1px solid #eee;
+  border: 2px solid #eee;
   text-align: center;
   font-weight: 300;
   transition: all 0.3s;
-}
-
-.code:valid {
-  border-color: #3498db;
-  box-shadow: 0 10px 10px -5px rgba(0, 0, 0, 0.25);
-}
-
-.info {
-  background-color: #eaeaea;
-  display: inline-block;
-  line-height: 20px;
-  max-width: 400px;
-  color: #777;
-  border-radius: 5px;
 }
 
 @media (max-width: 600px) {
   .code-container {
     flex-wrap: wrap;
   }
+}
 
-  .code {
-    font-size: 60px;
-    height: 80px;
-    max-width: 50px;
-  }
+.results-container {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  transition: all 1s;
+  transform: scale(0);
+}
+
+.results-container > * {
+  margin: 20px 0;
+}
+
+.btn {
+  font-family: inherit;
+  padding: 10px;
+  border-radius: 10px;
+  cursor: pointer;
+  background: #5eba7d;
+  color: #fff;
+  border: 1px solid rgb(126, 126, 126);
+}
+
+.btn:active {
+  transform: scale(0.98);
 }
