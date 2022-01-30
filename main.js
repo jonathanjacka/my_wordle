@@ -1,17 +1,24 @@
 import { API_KEY } from '../config.js';
 
 const state = {
-  word: 'hello',
+  word: '',
   attempts: 0,
   isSolved: false,
   currentRow: document.getElementById('row-1'),
   currentWord: '',
 };
 
-const getState = () => state;
-
 const getWord = () => state.word;
-const setWord = (currentWord) => (state.currentWord = currentWord);
+
+const setWord = async () => {
+  const res = await fetch('words.txt');
+  const data = await res.text();
+  const wordList = data.split('\n');
+  const idx = Math.floor(Math.random() * wordList.length);
+  state.word = wordList[idx];
+  console.log(getWord());
+  return wordList[idx];
+};
 
 const getAttempts = () => state.attempts;
 const addAttempt = () => (state.attempts = state.attempts + 1);
@@ -69,7 +76,7 @@ const updateCurrentWord = (currentRow) => {
   currentRow
     .querySelectorAll('.cell')
     .forEach((cell) => (word = word + cell.value));
-  console.log('Current word: ', word);
+
   return word;
 };
 
@@ -91,7 +98,6 @@ const handleKeyDown = (key, cells, cell, idx) => {
   } else if (key === 'ArrowLeft') {
     idx > 0 && cells[idx - 1].focus();
   } else if (key !== 'Enter') {
-    console.log(key, 'Invalid!');
     setTimeout(() => {
       cell.value = '';
       cells[idx].focus();
@@ -138,7 +144,6 @@ const checkLetters = async (word, currentWord, currentRow) => {
   for (let i = 0; i < currentWord.length; i++) {
     if (word[i] === currentWord[i]) {
       colors[i] = 'green';
-      console.log(word[i], currentWord[i]);
       currentWord =
         currentWord.substring(0, i) + 'G' + currentWord.substring(i + 1);
       word = word.substring(0, i) + 'G' + word.substring(i + 1);
@@ -147,7 +152,6 @@ const checkLetters = async (word, currentWord, currentRow) => {
 
   for (let j = 0; j < currentWord.length; j++) {
     const wordIdx = word.indexOf(currentWord[j]);
-    console.log(wordIdx);
     if (wordIdx >= 0 && currentWord[j] !== 'G') {
       colors[j] = 'yellow';
       currentWord =
@@ -203,13 +207,10 @@ const handleEnter = async () => {
   };
 
   const enteredWord = updateCurrentWord(state.currentRow);
+  const wordIsValid = await validateWord(enteredWord);
 
-  const validWord = await validateWord(enteredWord);
-
-  if (checkRowComplete(state.currentRow) && validWord) {
+  if (checkRowComplete(state.currentRow) && wordIsValid) {
     setCurrentWord(enteredWord);
-    console.log(getCurrentWord());
-
     addAttempt();
     removeCellListeners(getCurrentRow());
     //disable current row
@@ -229,8 +230,6 @@ const handleEnter = async () => {
       const endMessage = getIsSolved()
         ? `You win in ${getAttempts()} attempts!`
         : 'You did not complete the Wordle!';
-      console.log(endMessage);
-      console.log('Game is finished!');
 
       displayFinalMessage(getIsSolved(), getAttempts());
     }
@@ -241,3 +240,4 @@ const handleEnter = async () => {
 
 enableRow(getCurrentRow());
 setCellListeners(getCurrentRow());
+setWord();
