@@ -1,3 +1,5 @@
+import { API_KEY } from '../config.js';
+
 const state = {
   word: 'hello',
   attempts: 0,
@@ -103,6 +105,23 @@ const handleDocListener = ({ key }) => {
   }
 };
 
+const validateWord = async (guessedWord) => {
+  try {
+    const res = await fetch(
+      `https://dictionaryapi.com/api/v3/references/collegiate/json/${guessedWord}?key=${API_KEY}`
+    );
+
+    if (res.ok) {
+      const word = await res.json();
+      console.log(`${word[0].meta.id} is a valid word!`);
+      return true;
+    }
+  } catch (error) {
+    console.log('The word entered is not a valid word! Error: ', error);
+  }
+  return false;
+};
+
 const checkLetters = async (word, currentWord, currentRow) => {
   const pause = (milliseconds) =>
     new Promise((resolve) => setTimeout(resolve, milliseconds));
@@ -160,7 +179,7 @@ const displayFinalMessage = (getIsSolved, getAttempts) => {
     ? `You completed the challenge in ${getAttempts} ${
         getAttempts > 1 ? `attempts!` : 'attempt!'
       }`
-    : 'You were unable to solve the challenge.';
+    : 'Unfortunately, you were unable to solve the challenge.';
 
   resultsContainer.querySelector('p').innerHTML = endMessage;
   const replayBtn = document.getElementById('replay-btn');
@@ -183,19 +202,18 @@ const handleEnter = async () => {
     return new Promise((resolve) => setTimeout(resolve, milliseconds));
   };
 
-  if (checkRowComplete(state.currentRow)) {
-    //check to see if word is valid
+  const enteredWord = updateCurrentWord(state.currentRow);
 
-    setWord(updateCurrentWord(state.currentRow));
+  const validWord = await validateWord(enteredWord);
+
+  if (checkRowComplete(state.currentRow) && validWord) {
+    setCurrentWord(enteredWord);
     console.log(getCurrentWord());
 
     addAttempt();
-
     removeCellListeners(getCurrentRow());
-
     //disable current row
     disableRow(getCurrentRow());
-
     //color letters accordingly
     checkLetters(getWord(), getCurrentWord(), getCurrentRow());
     await pause(2800);
