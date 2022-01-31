@@ -189,8 +189,8 @@ const displayFinalMessage = (getIsSolved, getAttempts) => {
   const replayBtn = document.getElementById('replay-btn');
   replayBtn.addEventListener('click', handleReplay);
 
-  const shareBtn = document.getElementById('share-btn');
-  shareBtn.addEventListener('click', handleShare);
+  // const shareBtn = document.getElementById('share-btn');
+  // shareBtn.addEventListener('click', handleShare);
 
   resultsContainer.style.transform = 'scale(1)';
 };
