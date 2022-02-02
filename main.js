@@ -1,4 +1,5 @@
-import { API_KEY } from '../config.js';
+import { API_KEY } from './config.js';
+import { createKeyboard } from './keyboard.js';
 
 const state = {
   word: '',
@@ -219,6 +220,8 @@ const handleEnter = async () => {
     checkLetters(getWord(), getCurrentWord(), getCurrentRow());
     await pause(2800);
 
+    //color keyboard letters used
+
     //check to see if winner
     setIsSolved(getWord() === getCurrentWord());
 
@@ -227,10 +230,6 @@ const handleEnter = async () => {
       enableRow(getCurrentRow());
       setCellListeners(getCurrentRow());
     } else {
-      const endMessage = getIsSolved()
-        ? `You win in ${getAttempts()} attempts!`
-        : 'You did not complete the Wordle!';
-
       displayFinalMessage(getIsSolved(), getAttempts());
     }
   }
@@ -241,3 +240,4 @@ const handleEnter = async () => {
 enableRow(getCurrentRow());
 setCellListeners(getCurrentRow());
 setWord();
+createKeyboard();
